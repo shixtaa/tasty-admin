@@ -9,10 +9,11 @@ import _ from 'lodash';
 
 /* moment */
 import moment from 'moment-timezone';
-moment.locale('zh-cn',{ weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'), });
 
 /* antd */
 import { Modal,Form, Input, Select ,Tag ,TimePicker ,Button } from 'antd';
+
+moment.locale('zh-cn',{ weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'), });
 const { Option } = Select;
 const { RangePicker } = TimePicker;
 // import { renderOption } from '../../../../../Common/utils';
@@ -37,12 +38,12 @@ export default function ModalBox () {
   /* 纽约时间 */
   var newYork = moment.tz(time, 'America/New_York').format('YYYY-MM-DD HH:mm:ss dddd');
 
-  useEffect(()=>{
-    // console.log(name);
-    // console.log(hour);
-    console.log(tagList);
-    console.log(afterUpdatedRestaurant);
-  },[ name,hour,tagList ]);
+  // useEffect(()=>{
+  //   // console.log(name);
+  //   // console.log(hour);
+  //   console.log(tagList);
+  //   console.log(afterUpdatedRestaurant);
+  // },[ name,hour,tagList ]);
 
   /* 确认 */
   function handleOk (){
@@ -70,7 +71,7 @@ export default function ModalBox () {
 
   /* 改变语言 */
   async function changeLang (value){
-    if(value == 'zh-CN'){
+    if(value === 'zh-CN'){
       await dispatch(setZh());
     }else{
       await dispatch(setEn());
@@ -92,7 +93,7 @@ export default function ModalBox () {
       }
     };
   },[]);
-
+/* eslint-disable */
   useEffect(  ()=>{
     setInputValue(selectedList.name[`${language}`]);
     setTagList(selectedList.tags);
@@ -113,7 +114,7 @@ export default function ModalBox () {
   /* 增加tags */
   function changeTag (value){
     let cloneList = _.cloneDeep(tagList);
-    if(_.indexOf(cloneList,value) == -1){
+    if(_.indexOf(cloneList,value) === -1){
       cloneList.push(value);
     }
     setTagList(cloneList);
@@ -179,7 +180,14 @@ export default function ModalBox () {
     setHour(newHour);
     setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,hours:newHour });
   }
-
+/* 获取一段范围内的所有数值 */
+  function range(start, end) {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
   /* 时间选择 */
   function renderTimeList (){
     let array = [ '星期一','星期二','星期三','星期四','星期五','星期六','星期天' ];
@@ -191,7 +199,7 @@ export default function ModalBox () {
           <Button type="primary" disabled>
             {item}
           </Button>
-          <RangePicker defaultValue={ gethour(result) } onChange={ (time,timeString)=>{changeHour(time,timeString,index);} } ></RangePicker>
+          <RangePicker disabledSeconds={()=> range(0, 60)} defaultValue={ gethour(result) } onChange={ (time,timeString)=>{changeHour(time,timeString,index);} } ></RangePicker>
         </div>
       );
     });

@@ -1,9 +1,9 @@
+/* eslint-disable */
 import React, { useEffect,useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 /* antd */
 import { Select,Table,Switch ,Input,Space,Button } from 'antd';
-const { Option } = Select;
 import { SearchOutlined } from '@ant-design/icons';
 
 /* 库 */
@@ -12,6 +12,10 @@ import pinyinMatch from 'pinyin-match';
 
 /* actions */
 import { getMenu ,getRestaurantName,clearData ,updateAvailable } from './state/reducer';
+const { Option } = Select;
+
+/* utils */
+import {disable} from '../../../../Common/utils'
 
 export default function Menu () {
   const restNameList = useSelector(state=>state.menu.restaurantNames);
@@ -80,19 +84,19 @@ export default function Menu () {
       render:(text,record)=> {
         return (
           record.available ?
-            <Switch onChange={ ()=>{changeAvailable(record);} } defaultChecked/> :
-            <Switch onChange={ ()=>{changeAvailable(record);} } checked={ record.available } />
+            <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } defaultChecked/> :
+            <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } checked={ record.available } />
         );
       },
       width: '30%',
     },
   ];
   /* 渲染餐馆名称 */
-  useEffect(async ()=>{
+  useEffect( ()=>{
     setselectedRest('');
-    await dispatch(clearData());
-    await dispatch(getRestaurantName());
-  },[]);
+    dispatch(clearData());
+    dispatch(getRestaurantName());
+  },[dispatch]);
 
   useEffect(()=>{
     setPagination({ ...pagination,total:count ,current:1,page:1 });
@@ -174,6 +178,7 @@ export default function Menu () {
         placeholder="Select a restaurant"
         optionFilterProp="children"
         onChange={ onChange }
+
         filterOption={ (input, option) =>{
           if(option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0){
             return true;

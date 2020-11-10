@@ -13,9 +13,11 @@ import {  useDispatch ,useSelector } from 'react-redux';
 /* components */
 import ModalBox from './Component/ModalBox';
 
+/* utils */
+import {disable} from '../../../../Common/utils'
+
 export default function Restaurant () {
   const [ dataSource,setDataSource ] = useState([]);
-  const [ flag,setFlag ] = useState(false);
 
   /* 点击操作之后赋给modal的信息 */
   const [ perItem,setPerItem ] = useState({});
@@ -27,13 +29,14 @@ export default function Restaurant () {
 
   const isShow = useSelector(state=>state.restaurant.isShow);
 
+  /* eslint-disable */
   useEffect( async ()=>{
     await dispatch(getRest());
     renderList();
     dispatch(getTags());
   },[ list.length ]);
 
-  useEffect( async ()=>{
+  useEffect(  ()=>{
     renderList();
   },[ list ]);
 
@@ -60,8 +63,7 @@ export default function Restaurant () {
   }
 
   /* 人为关闭 */
-  async function onChange (checked,value){
-    setFlag(!flag);
+  async function onChange (value){
     let close = {};
     if(value.closed == (null || undefined)){
       close.closed = true;
@@ -82,6 +84,7 @@ export default function Restaurant () {
     dispatch(saveItem(value));
     dispatch(showModal());
   }
+
 
   const columns = [
     {
@@ -120,7 +123,7 @@ export default function Restaurant () {
       dataIndex: 'index',
       render:( text,record)=>{
         return (
-          <Button type="primary" onClick={ ()=>{openModal(record.modalInfo);} } >
+          <Button disabled={disable()}  type="primary" onClick={ ()=>{openModal(record.modalInfo);} } >
           操作
           </Button>
         );
@@ -132,8 +135,8 @@ export default function Restaurant () {
       render:(text,record)=> {
         return (
           record.closed !== (null || undefined) ?
-            <Switch  onChange={ (checked)=>{onChange(checked,record);} } defaultChecked /> :
-            <Switch  onChange={ (checked)=>{onChange(checked,record);} }  checked={ !_.isEmpty(record.closed) }/>
+            <Switch disabled={disable()} onChange={ ()=>{onChange(record);} } defaultChecked /> :
+            <Switch disabled={disable()} onChange={ ()=>{onChange(record);} }  checked={ !_.isEmpty(record.closed) }/>
         );
       }
     },

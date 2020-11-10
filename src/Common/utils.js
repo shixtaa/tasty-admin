@@ -1,8 +1,8 @@
 import { Select } from 'antd';
 import React from 'react';
+import _ from 'lodash';
 const { Option } = Select;
 
-import _ from 'lodash';
 /* 往localstorage里面设置特定的值 */
 export function setStorage (key, data) {
   if(!key) return;
@@ -28,4 +28,15 @@ export function renderOption (list,content){
       <Option value={ JSON.stringify(item) } key={ Math.random() }>{content}</Option>
     );
   });
+}
+
+
+/* admin之外的权限不可操作 */
+export function disable(){
+  let user=getStorage('user')
+  if(user!=='admin'){
+    return true
+  }else{
+    return false
+  }
 }
