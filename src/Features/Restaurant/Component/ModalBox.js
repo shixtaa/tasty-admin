@@ -2,7 +2,7 @@ import React,{ useState,useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 /* actions */
 import { setEn,setZh ,updateRest } from '../state/reducer';
-import { hideModal } from '../../../State/reducer';
+import { hideModal } from '../../Admin/State/reducer';
 
 /* lodash */
 import _ from 'lodash';

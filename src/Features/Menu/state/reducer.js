@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { showLoading,hideLoading } from '../../../../../Redux/Reducer/loading';
+import { showLoading,hideLoading } from '../../../Redux/Reducer/loading';
 import { message } from 'antd';
-import { menu ,available } from '../../../../../Request/menu';
-import { restaurant } from '../../../../../Request/restaurant';
+import { menu ,available } from '../../../Request/menu';
+import { restaurant } from '../../../Request/restaurant';
 import _ from 'lodash';
 
 export const meunSlice = createSlice({

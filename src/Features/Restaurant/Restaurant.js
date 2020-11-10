@@ -3,7 +3,7 @@ import React, {  useEffect,useState } from 'react';
 import { Table,Tag,Switch, Button } from 'antd';
 
 /* actions */
-import { getRest,saveItem,getTags ,showModal } from '../../State/reducer';
+import { getRest,saveItem,getTags ,showModal } from '../Admin/State/reducer';
 import { updateRest } from './state/reducer';
 
 /* lodash */
@@ -14,7 +14,7 @@ import {  useDispatch ,useSelector } from 'react-redux';
 import ModalBox from './Component/ModalBox';
 
 /* utils */
-import {disable} from '../../../../Common/utils'
+import {disable} from '../../Common/utils'
 
 export default function Restaurant () {
   const [ dataSource,setDataSource ] = useState([]);

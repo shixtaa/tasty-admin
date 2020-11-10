@@ -13,10 +13,10 @@ import {
 import { BrowserRouter as Router,Switch,Route, Link ,useLocation,Redirect, useHistory } from 'react-router-dom';
 
 /* components */
-import Restaurant from './Components/Restaurant/Restaurant';
-import MyMenu from './Components/Menu/Menu';
+import Restaurant from '../Restaurant/Restaurant';
+import MyMenu from '../Menu/Menu';
 import Loading from '../../Components/Loading/Loading';
-import Order from './Components/Order/Order';
+import Order from '../Order/Order';
 
 /* utils */
 import {getStorage} from '../../Common/utils'

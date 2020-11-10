@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { message } from 'antd';
-import { showLoading,hideLoading } from '../../../../../Redux/Reducer/loading';
-import { order} from '../../../../../Request/order'
+import { showLoading,hideLoading } from '../../../Redux/Reducer/loading';
+import { order} from '../../../Request/order'
 
 export const orderSlice = createSlice({
   name: 'order',

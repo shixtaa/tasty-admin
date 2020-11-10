@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { setStorage,getStorage } from '../../../../../Common/utils';
-import { showLoading,hideLoading } from '../../../../../Redux/Reducer/loading';
-import { updateRestaurant } from '../../../../../Request/restaurant';
+import { setStorage,getStorage } from '../../../Common/utils';
+import { showLoading,hideLoading } from '../../../Redux/Reducer/loading';
+import { updateRestaurant } from '../../../Request/restaurant';
 import { message } from 'antd';
-import { getRest } from '../../../State/reducer';
+import { getRest } from '../../Admin/State/reducer';
 
 export const languageSlice = createSlice({
   name: 'counter',

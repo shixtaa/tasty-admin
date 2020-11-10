@@ -15,7 +15,7 @@ import { getMenu ,getRestaurantName,clearData ,updateAvailable } from './state/r
 const { Option } = Select;
 
 /* utils */
-import {disable} from '../../../../Common/utils'
+import {disable} from '../../Common/utils'
 
 export default function Menu () {
   const restNameList = useSelector(state=>state.menu.restaurantNames);

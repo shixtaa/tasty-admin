@@ -25,7 +25,7 @@ import {getOrder,clearOrder} from './state/reducer'
 import { useDispatch } from 'react-redux';
 
 /* utils */
-import {getStorage} from '../../../../Common/utils'
+import {getStorage} from '../../Common/utils'
 import { useHistory } from 'react-router-dom';
 
 const { RangePicker } = DatePicker;
