@@ -200,8 +200,9 @@ export default function ModalBox () {
                 name={ [ 'name', 'province' ] }
                 noStyle
                 rules={ [ { required: true, message: 'Province is required' } ] }
+                initialValue={ language }
               >
-                <Select style={{ width :'80px' }} defaultValue={ language } onChange={ (value)=>{changeLang(value); } }>
+                <Select style={{ width :'80px' }}  onChange={ (value)=>{changeLang(value); } }>
                   <Option value="zh-CN" >中文</Option>
                   <Option value="en-US" >英文</Option>
                 </Select>
