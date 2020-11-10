@@ -38,6 +38,7 @@ export default function Order () {
   // const quantityLineRef=useRef()
   // const quantityPieRef=useRef()
   const [allDate,setAllDate]=useState([])
+
   /* eslint-disable */
   useEffect(()=>{
     let user=getStorage('user')
@@ -164,6 +165,8 @@ function quantityData(){
 /* 订单量 */
 function renderQuantity(){
   let data=quantityData()
+  
+  
   echarts.init(quantityRef.current).setOption({
     title: {
       text: '订单量',
@@ -178,8 +181,9 @@ function renderQuantity(){
     },
     xAxis: {
       type: 'category',
+      // data: _.map(data,(item)=>{return item.name})
       data: _.map(data,(item)=>{return item.name})
-
+      
     },
     yAxis: {
         type: 'value'
