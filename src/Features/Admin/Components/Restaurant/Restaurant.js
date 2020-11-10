@@ -80,7 +80,6 @@ export default function Restaurant () {
 
   /* 打开modal */
   function openModal (value){
-    console.log(value);
     dispatch(saveItem(value));
     dispatch(showModal());
   }

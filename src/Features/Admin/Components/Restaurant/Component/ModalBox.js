@@ -27,7 +27,6 @@ export default function ModalBox () {
   const [ inputValue,setInputValue ] = useState('');
   const [ time,setTime ] = useState(new Date());
   const [ tagList,setTagList ] = useState([]);
-  const [ name,setName ] = useState('');
   const [ hour,setHour ] = useState([]);
   const [ afterUpdatedRestaurant,setAfterUpdatedRestaurant ] = useState({});
 
@@ -38,20 +37,9 @@ export default function ModalBox () {
   /* 纽约时间 */
   var newYork = moment.tz(time, 'America/New_York').format('YYYY-MM-DD HH:mm:ss dddd');
 
-  // useEffect(()=>{
-  //   // console.log(name);
-  //   // console.log(hour);
-  //   console.log(tagList);
-  //   console.log(afterUpdatedRestaurant);
-  // },[ name,hour,tagList ]);
-
   /* 确认 */
   function handleOk (){
-    /* 隐藏modal */
-    console.log('inputValue==>',inputValue);
-    console.log('name==>',name);
-
-    // if(inputValue !== name){
+    /* 更新信息 */
     let data = {
       id:selectedList._id,
       data:{
@@ -59,13 +47,12 @@ export default function ModalBox () {
       }
     };
     dispatch(updateRest(data));
-    // }
+    /* 隐藏modal */
     handleCancel();
 
   }
   /* 取消modal */
   function handleCancel () {
-    // dispatch(saveItem([]));
     dispatch(hideModal());
   }
 
@@ -77,10 +64,6 @@ export default function ModalBox () {
       await dispatch(setEn());
     }
   }
-  /* 改变餐馆tags */
-  // useEffect(()=>{
-  //   setTagList(selectedList.tags);
-  // },[ selectedList.tags ]);
 
   /* 每秒循环时间 */
   useEffect(()=>{
@@ -98,7 +81,6 @@ export default function ModalBox () {
     setInputValue(selectedList.name[`${language}`]);
     setTagList(selectedList.tags);
     setAfterUpdatedRestaurant(selectedList);
-    setName(selectedList.name[`${language}`]);
     setHour(selectedList.hours);
     inputRef.current.state.value = inputValue;
   },[ language,inputValue ]);
@@ -120,6 +102,7 @@ export default function ModalBox () {
     setTagList(cloneList);
     setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,tags:cloneList });
   }
+
   /*删除tags */
   function close (index){
     let cloneList = _.cloneDeep(tagList);
@@ -154,15 +137,12 @@ export default function ModalBox () {
       moment( formatTime(info[0]),'HH:mm:ss'),
       moment( formatTime(info[1]),'HH:mm:ss')
     ];
-    // console.log(hourList);
     return hourList;
   }
-  /* 修改input */
+  /* 修改菜名input */
   function changeInput (e){
     let name = e.target.value;
     if(inputValue !== name){
-      console.log('in');
-      setName(name);
       setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,name:{ ...selectedList.name,[`${language}`]:name } });
     }
   }
@@ -180,7 +160,7 @@ export default function ModalBox () {
     setHour(newHour);
     setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,hours:newHour });
   }
-/* 获取一段范围内的所有数值 */
+  /* 获取一段范围内的所有数值 */
   function range(start, end) {
     const result = [];
     for (let i = start; i < end; i++) {
@@ -240,7 +220,6 @@ export default function ModalBox () {
             <Form.Item>
               <Select style={{ width :'120px',margin :'0 10px 6px 0' }} defaultValue={ tags[0] } onChange={ (value)=>{changeTag(value);} }>
                 {renderTagList()}
-                {/* {renderOption(tags)} */}
               </Select>
               {renderTags()}
             </Form.Item>

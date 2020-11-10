@@ -62,7 +62,6 @@ export default function Order () {
 /* 去重，计算数量 */
 function handleData(array,params){
   let list=[]
-  console.log(array)
   _.forIn(_.groupBy(array,params),(value,key)=>{
     let item = {
       name:'',
