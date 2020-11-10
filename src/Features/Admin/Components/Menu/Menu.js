@@ -108,7 +108,7 @@ export default function Menu () {
     console.log('search');
     await dispatch(getMenu(selectedRest,1,pagination.pageSize,searchInput));
     setFilterDropdownVisible(false);
-    setsearchInput('');
+    // setsearchInput('');
   }
 
   /* 渲染餐馆名字 */
