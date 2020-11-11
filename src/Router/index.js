@@ -19,31 +19,19 @@ export const routerConfig = [
     component: Admin,
     routes: [
       {
-        path: '/restaurant',
+        path: '/admin/restaurant',
         component: Restaurant
       },
       
       {
-        path: '/menu',
+        path: '/admin/menu',
         component: Menu
       },
       {
-        path: '/order',
+        path: '/admin/order',
         component: Order
       }]
   },
-  // {
-  //   path:'/admin/restaurant',
-  //   component: Restaurant
-  // },
-  // {
-  //   path:'/admin/order',
-  //   component: Order
-  // },
-  // {
-  //   path:'/admin/menu',
-  //   component: Menu
-  // },
   {
     path:'/',
     component:()=>{

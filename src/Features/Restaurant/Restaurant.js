@@ -10,6 +10,8 @@ import { updateRest } from './state/reducer';
 import _ from 'lodash';
 import {  useDispatch ,useSelector } from 'react-redux';
 
+import {useMount} from 'react-use'
+
 /* components */
 import ModalBox from './Component/ModalBox';
 
@@ -18,31 +20,22 @@ import {disable} from '../../Common/utils'
 
 export default function Restaurant () {
   const [ dataSource,setDataSource ] = useState([]);
-
-  /* 点击操作之后赋给modal的信息 */
-  const [ perItem,setPerItem ] = useState({});
   /* state中存储的餐馆列表 */
   const list = useSelector(state=>state.restaurant.list);
-  const language = useSelector(state=>state.language.lang);
 
   const dispatch = useDispatch();
 
   /* eslint-disable */
-  useEffect( async ()=>{
+  useMount( async ()=>{
     await dispatch(getRest());
-    renderList();
     dispatch(getTags());
-  },[ list.length ]);
-
-  useEffect(  ()=>{
-    renderList();
-  },[ list ]);
+  },[]);
 
   useEffect(()=>{
-    if(perItem.name){
-      setPerItem({ ...perItem,newName:perItem.name[`${language}`] });
+    if( list.length >0){
+      renderList();
     }
-  },[ language ]);
+  },[ list ]);
 
   /* 渲染restarant列表 */
   function renderList (){

@@ -83,8 +83,8 @@ export default function Menu () {
       key: 'available',
       render:(text,record)=> {
         return (
-          record.available ?
-            <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } defaultChecked/> :
+          // record.available ?
+          //   <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } defaultChecked/> :
             <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } checked={ record.available } />
         );
       },
@@ -93,9 +93,11 @@ export default function Menu () {
   ];
   /* 渲染餐馆名称 */
   useEffect( ()=>{;
-    dispatch(clearData());
     dispatch(getRestaurantName());
-  },[dispatch]);
+    return ()=>{
+      dispatch(clearData());
+    }
+  },[]);
 
   useEffect(()=>{
     setPagination({ ...pagination,total:count ,current:1,page:1 });
@@ -104,7 +106,7 @@ export default function Menu () {
 
   useEffect(()=>{
     renderData();
-  },[ pagination.page,pagination.pageSize ]);
+  },[ foodList,pagination.page,pagination.pageSize ]);
   /* 搜索菜名 */
   async function handleSearch () {
     await dispatch(getMenu(selectedRest,1,pagination.pageSize,searchInput));
@@ -143,6 +145,7 @@ export default function Menu () {
 
   /* 渲染表格数据 */
   function renderData (){
+    console.log(foodList)
     let data = [];
     _.map(foodList,(item)=>{
       data.push({
@@ -156,7 +159,6 @@ export default function Menu () {
   }
   /* 修改available状态 */
   async function changeAvailable (record){
-    console.log(record);
     let data = {
       id: record.key,
       data:{
@@ -164,7 +166,7 @@ export default function Menu () {
       }
     };
     await dispatch(updateAvailable(data));
-    renderData();
+    await dispatch(getMenu(selectedRest,pagination.page,pagination.pageSize,searchInput));
   }
 
 

@@ -43,7 +43,7 @@ export default function Order () {
   useEffect(()=>{
     let user=getStorage('user')
     if(user&&user==='visitor'){
-      history.push('/admin/restaurant')
+      history.replace('/admin/restaurant')
     }
     dispatch(clearOrder())
     // quantityLine()
