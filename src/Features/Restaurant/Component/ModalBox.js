@@ -116,17 +116,21 @@ export default function ModalBox () {
     setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,name:{ ...afterUpdatedRestaurant.name,[`${language}`]:name } });
 
   }
+
+  /* format时间 */
+  function formatTime(time){
+    return parseInt(moment(time).hours()) * 60 + parseInt(moment(time).minutes());
+
+  }
+
   /* 修改时间 */
   function changeHour (time,timeString,index){
-    let startarr = timeString[0].split(':');
-    let endarr = timeString[1].split(':');
-    let start = parseInt(startarr[0]) * 60 + parseInt(startarr[1]);
-    let end = parseInt(endarr[0]) * 60 + parseInt(endarr[1]);
     let hour=_.cloneDeep(afterUpdatedRestaurant.hours)
-    hour[index].start = start
-    hour[index].end = end;
+    hour[index].start = formatTime(time[0])
+    hour[index].end = formatTime(time[1])
     setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,hours:hour });
   }
+
   /* 获取一段范围内的所有数值 */
   function range(start, end) {
     const result = [];
