@@ -1,8 +1,10 @@
-import React,{ useState,useEffect, useRef } from 'react';
+import React,{ useState,useEffect } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
 /* actions */
-import { setEn,setZh ,updateRest } from '../state/reducer';
+import { updateRest } from '../state/reducer';
 import { hideModal } from '../../Admin/State/reducer';
+
 
 /* lodash */
 import _ from 'lodash';
@@ -16,55 +18,25 @@ import { Modal,Form, Input, Select ,Tag ,TimePicker ,Button } from 'antd';
 moment.locale('zh-cn',{ weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'), });
 const { Option } = Select;
 const { RangePicker } = TimePicker;
-// import { renderOption } from '../../../../../Common/utils';
 
 export default function ModalBox () {
-  const language = useSelector(state=>state.language.lang);
   const tags = useSelector(state=>state.restaurant.tags);
   const selectedList = useSelector(state=>state.restaurant.selectedItem);
   const isShow = useSelector(state=>state.restaurant.isShow);
 
-  const [ inputValue,setInputValue ] = useState(selectedList.name[`${language}`]);
   const [ time,setTime ] = useState(new Date());
-  const [ tagList ] = useState(_.cloneDeep(selectedList.tags));
-  const [ hour ] = useState(_.cloneDeep(selectedList.hours));
-  const [ afterUpdatedRestaurant,setAfterUpdatedRestaurant ] = useState(selectedList);
+  const [ afterUpdatedRestaurant,setAfterUpdatedRestaurant ] = useState('');
+  const [language,setLanguage]=useState('zh-CN')
 
   const dispatch = useDispatch();
-
-  const inputRef = useRef(inputValue);
 
   /* 纽约时间 */
   var newYork = moment.tz(time, 'America/New_York').format('YYYY-MM-DD HH:mm:ss dddd');
 
-  /* 确认 */
-  async function handleOk (){
-    /* 更新信息 */
-    let data = {
-      id:selectedList._id,
-      data:{
-        ..._.omit(afterUpdatedRestaurant,'_id')
-      }
-    };
-    await dispatch(updateRest(data));
-    /* 隐藏modal */
-    handleCancel();
-
-  }
-  /* 取消modal */
-  function handleCancel () {
-    dispatch(hideModal());
-  }
-
-  /* 改变语言 */
-  async function changeLang (value){
-    if(value === 'zh-CN'){
-      await dispatch(setZh());
-    }else{
-      await dispatch(setEn());
-    }
-    setInputValue(selectedList.name[`${value}`])
-  }
+  /* 注入灵魂 */
+  useEffect(()=>{
+    setAfterUpdatedRestaurant(selectedList)
+  },[selectedList])
 
   /* 每秒循环时间 */
   useEffect(()=>{
@@ -77,13 +49,26 @@ export default function ModalBox () {
       }
     };
   },[]);
-/* eslint-disable */
-  useEffect(  ()=>{
-    // console.log(hour)
-    // console.log(inputRef)
-    console.log(inputValue)
-    inputRef.current = inputValue;
-  },[ language,inputValue ]);
+  
+
+  /* 确认更新 */
+  async function handleOk (){
+    /* 更新信息 */
+    let data = {
+      id:selectedList._id,
+      data:{
+        ..._.omit(afterUpdatedRestaurant,'_id')
+      }
+    };
+    await dispatch(updateRest(data));
+    /* 隐藏modal */
+    handleCancel();
+  }
+
+  /* 取消modal */
+  function handleCancel () {
+    dispatch(hideModal());
+  }
 
   /* 渲染所有的tags列表 */
   function renderTagList (){
@@ -95,6 +80,7 @@ export default function ModalBox () {
   }
   /* 增加tags */
   function addTag (value){
+    let tagList=_.cloneDeep(_.get(afterUpdatedRestaurant,'tags'))
     if(_.indexOf(tagList,value) === -1){
       tagList.push(value);
       }
@@ -103,31 +89,32 @@ export default function ModalBox () {
 
   /*删除tags */
   function removeTag (index){
+    let tagList=_.cloneDeep(_.get(afterUpdatedRestaurant,'tags'))
+
+    // console.log(tagList)
     tagList.splice(index,1);
     setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,tags:tagList });
   }
 
   /* 渲染餐馆的tags */
   function renderTags (){
-    return tagList.map((tag,index) => {
-      let color = tag.length > 5 ? 'geekblue' : 'green';
-      if (tag === 'loser') {
-        color = 'volcano';
-      }
-      return (
-        <Tag color={ color } key={ Math.random() } closable onClose={ ()=>{removeTag(index);} } style={{ marginRight :'10px' }}>
-          {tag.toUpperCase()}
-        </Tag>
-      );
-    });}
+    if(afterUpdatedRestaurant.tags){
+      return _.map(afterUpdatedRestaurant.tags,(tag,index) => {
+          let color = tag.length > 5 ? 'geekblue' : 'green';
+          return (
+            <Tag color={ color } key={ Math.random() } closable onClose={ ()=>{removeTag(index);} } style={{ marginRight :'10px' }}>
+              {tag.toUpperCase()}
+            </Tag>
+          );
+        });
+    }
+  }
 
   /* 修改菜名input */
   function changeInput (e){
     let name = e.target.value;
+    setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,name:{ ...afterUpdatedRestaurant.name,[`${language}`]:name } });
 
-    if(inputValue !== name){
-      setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,name:{ ...selectedList.name,[`${language}`]:name } });
-    }
   }
   /* 修改时间 */
   function changeHour (time,timeString,index){
@@ -135,6 +122,7 @@ export default function ModalBox () {
     let endarr = timeString[1].split(':');
     let start = parseInt(startarr[0]) * 60 + parseInt(startarr[1]);
     let end = parseInt(endarr[0]) * 60 + parseInt(endarr[1]);
+    let hour=_.cloneDeep(afterUpdatedRestaurant.hours)
     hour[index].start = start
     hour[index].end = end;
     setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,hours:hour });
@@ -151,23 +139,25 @@ export default function ModalBox () {
   function renderTimeList (){
     let array = [ '星期一','星期二','星期三','星期四','星期五','星期六','星期天' ];
     return _.map(array, (item,index)=>{
-      let hourInfo = selectedList.hours[index];
-      let result = hourInfo ? [ moment().startOf('day').add(hourInfo.start,'minutes'),moment().startOf('day').add(hourInfo.end,'minutes')] : [ '00:00:00','00:00:00' ];
-      return (
-        <div key={ selectedList._id + index }>
-          <Button type="primary" disabled>
-            {item}
-          </Button>
-          <RangePicker disabledSeconds={()=> range(0, 60)} defaultValue={result} onChange={(time,timeString)=>{changeHour(time,timeString,index)}}></RangePicker>
-        </div>
-      );
+      if(afterUpdatedRestaurant.hours){
+        let hourInfo = afterUpdatedRestaurant.hours[index];
+        let result = hourInfo ? [ moment().startOf('day').add(hourInfo.start,'minutes'),moment().startOf('day').add(hourInfo.end,'minutes')] : [ '00:00:00','00:00:00' ];
+        return (
+          <div key={ afterUpdatedRestaurant._id + index }>
+            <Button type="primary" disabled>
+              {item}
+            </Button>
+            <RangePicker disabledSeconds={()=> range(0, 60)} defaultValue={result} onChange={(time,timeString)=>{changeHour(time,timeString,index)}}></RangePicker>
+          </div>
+        );
+      }
     });
   }
 
   return (
     <div>
       <Modal
-        title={ selectedList.name[`${language}`] }
+        title={ _.get(selectedList,`name[${language}]`) }
         visible={ isShow }
         onOk={ handleOk }
         onCancel={ handleCancel }
@@ -176,23 +166,18 @@ export default function ModalBox () {
           <Form.Item label="餐馆名称：">
             <Input.Group compact>
               <Form.Item
-                name={ [ 'name', 'province' ] }
                 noStyle
-                rules={ [ { required: true, message: 'Province is required' } ] }
-                initialValue={ language }
               >
-                <Select style={{ width :'80px' }}  onChange={ (value)=>{changeLang(value); } }>
+                <Select style={{ width :'80px' }} defaultValue={language} onChange={ (value)=>{setLanguage(value) } }>
                   <Option value="zh-CN" >中文</Option>
                   <Option value="en-US" >英文</Option>
                 </Select>
               </Form.Item>
 
               <Form.Item
-                name={ [ 'address', 'street' ] }
                 noStyle
-                rules={ [ { required: true, message: 'Street is required' } ] }
               >
-                <Input style={{ width : '50%' }} placeholder="Input value" ref={ inputRef }  value={ inputValue }  onBlur={ (e)=>{changeInput(e);} }/>
+                <Input style={{ width : '50%' }} placeholder="Input value"   value={ _.get(afterUpdatedRestaurant,`name[${language}]`)} onChange={ (e)=>{changeInput(e);} }/>
               </Form.Item>
             </Input.Group>
           </Form.Item>

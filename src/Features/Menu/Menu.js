@@ -166,7 +166,7 @@ export default function Menu () {
     await dispatch(updateAvailable(data));
     renderData();
   }
- 
+
 
   return (
     <div>

@@ -27,8 +27,6 @@ export default function Restaurant () {
 
   const dispatch = useDispatch();
 
-  const isShow = useSelector(state=>state.restaurant.isShow);
-
   /* eslint-disable */
   useEffect( async ()=>{
     await dispatch(getRest());
@@ -36,9 +34,9 @@ export default function Restaurant () {
     dispatch(getTags());
   },[ list.length ]);
 
-  // useEffect(  ()=>{
-  //   renderList();
-  // },[ list ]);
+  useEffect(  ()=>{
+    renderList();
+  },[ list ]);
 
   useEffect(()=>{
     if(perItem.name){
@@ -133,9 +131,7 @@ export default function Restaurant () {
       key: 'closed',
       render:(text,record)=> {
         return (
-          record.closed !== (null || undefined) ?
-            <Switch disabled={disable()} onChange={ ()=>{onChange(record);} } defaultChecked /> :
-            <Switch disabled={disable()} onChange={ ()=>{onChange(record);} }  checked={ !_.isEmpty(record.closed) }/>
+          <Switch disabled={disable()} onChange={ ()=>{onChange(record);} }  checked={ !_.isEmpty(record.closed) }/>
         );
       }
     },
@@ -143,7 +139,8 @@ export default function Restaurant () {
   return (
     <div>
       <Table dataSource={ dataSource } columns={ columns } />
-      {isShow ? <ModalBox ></ModalBox> : null}
+      <ModalBox ></ModalBox>
+
     </div>
   );
 }
