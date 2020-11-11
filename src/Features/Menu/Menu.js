@@ -92,8 +92,7 @@ export default function Menu () {
     },
   ];
   /* 渲染餐馆名称 */
-  useEffect( ()=>{
-    setselectedRest('');
+  useEffect( ()=>{;
     dispatch(clearData());
     dispatch(getRestaurantName());
   },[dispatch]);
@@ -103,12 +102,13 @@ export default function Menu () {
     renderData();
   },[ selectedRest,count ]);
 
+  useEffect(()=>{
+    renderData();
+  },[ pagination.page,pagination.pageSize ]);
   /* 搜索菜名 */
   async function handleSearch () {
-    console.log('search');
     await dispatch(getMenu(selectedRest,1,pagination.pageSize,searchInput));
     setFilterDropdownVisible(false);
-    // setsearchInput('');
   }
 
   /* 渲染餐馆名字 */
@@ -130,7 +130,7 @@ export default function Menu () {
 
   /* 切换页面 */
   async function changePage (value){
-    console.log(value);
+    console.log('page',value);
     await dispatch(getMenu(selectedRest,value.current,value.pageSize,searchInput));
     setPagination({
       ...pagination,
@@ -166,9 +166,7 @@ export default function Menu () {
     await dispatch(updateAvailable(data));
     renderData();
   }
-  useEffect(()=>{
-    renderData();
-  },[ pagination.page,pagination.pageSize ]);
+ 
 
   return (
     <div>

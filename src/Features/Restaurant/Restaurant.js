@@ -36,9 +36,9 @@ export default function Restaurant () {
     dispatch(getTags());
   },[ list.length ]);
 
-  useEffect(  ()=>{
-    renderList();
-  },[ list ]);
+  // useEffect(  ()=>{
+  //   renderList();
+  // },[ list ]);
 
   useEffect(()=>{
     if(perItem.name){

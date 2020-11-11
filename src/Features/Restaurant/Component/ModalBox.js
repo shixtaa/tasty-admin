@@ -24,21 +24,21 @@ export default function ModalBox () {
   const selectedList = useSelector(state=>state.restaurant.selectedItem);
   const isShow = useSelector(state=>state.restaurant.isShow);
 
-  const [ inputValue,setInputValue ] = useState('');
+  const [ inputValue,setInputValue ] = useState(selectedList.name[`${language}`]);
   const [ time,setTime ] = useState(new Date());
-  const [ tagList,setTagList ] = useState([]);
-  const [ hour,setHour ] = useState([]);
-  const [ afterUpdatedRestaurant,setAfterUpdatedRestaurant ] = useState({});
+  const [ tagList ] = useState(_.cloneDeep(selectedList.tags));
+  const [ hour ] = useState(_.cloneDeep(selectedList.hours));
+  const [ afterUpdatedRestaurant,setAfterUpdatedRestaurant ] = useState(selectedList);
 
   const dispatch = useDispatch();
 
-  const inputRef = useRef();
+  const inputRef = useRef(inputValue);
 
   /* 纽约时间 */
   var newYork = moment.tz(time, 'America/New_York').format('YYYY-MM-DD HH:mm:ss dddd');
 
   /* 确认 */
-  function handleOk (){
+  async function handleOk (){
     /* 更新信息 */
     let data = {
       id:selectedList._id,
@@ -46,7 +46,7 @@ export default function ModalBox () {
         ..._.omit(afterUpdatedRestaurant,'_id')
       }
     };
-    dispatch(updateRest(data));
+    await dispatch(updateRest(data));
     /* 隐藏modal */
     handleCancel();
 
@@ -63,6 +63,7 @@ export default function ModalBox () {
     }else{
       await dispatch(setEn());
     }
+    setInputValue(selectedList.name[`${value}`])
   }
 
   /* 每秒循环时间 */
@@ -78,11 +79,10 @@ export default function ModalBox () {
   },[]);
 /* eslint-disable */
   useEffect(  ()=>{
-    setInputValue(selectedList.name[`${language}`]);
-    setTagList(selectedList.tags);
-    setAfterUpdatedRestaurant(selectedList);
-    setHour(selectedList.hours);
-    inputRef.current.state.value = inputValue;
+    // console.log(hour)
+    // console.log(inputRef)
+    console.log(inputValue)
+    inputRef.current = inputValue;
   },[ language,inputValue ]);
 
   /* 渲染所有的tags列表 */
@@ -94,22 +94,17 @@ export default function ModalBox () {
     });
   }
   /* 增加tags */
-  function changeTag (value){
-    let cloneList = _.cloneDeep(tagList);
-    if(_.indexOf(cloneList,value) === -1){
-      cloneList.push(value);
-    }
-    setTagList(cloneList);
-    setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,tags:cloneList });
+  function addTag (value){
+    if(_.indexOf(tagList,value) === -1){
+      tagList.push(value);
+      }
+    setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,tags:tagList });
   }
 
   /*删除tags */
-  function close (index){
-    let cloneList = _.cloneDeep(tagList);
-    cloneList.splice(index,1);
-    setTagList(cloneList);
-    setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,tags:cloneList });
-
+  function removeTag (index){
+    tagList.splice(index,1);
+    setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,tags:tagList });
   }
 
   /* 渲染餐馆的tags */
@@ -120,28 +115,16 @@ export default function ModalBox () {
         color = 'volcano';
       }
       return (
-        <Tag color={ color } key={ Math.random() } closable onClose={ ()=>{close(index);} } style={{ marginRight :'10px' }}>
+        <Tag color={ color } key={ Math.random() } closable onClose={ ()=>{removeTag(index);} } style={{ marginRight :'10px' }}>
           {tag.toUpperCase()}
         </Tag>
       );
     });}
 
-  /* format开关时间 */
-  function formatTime (value){
-    return `${value / 60}:${value % 60}:00`;
-  }
-
-  /* picker的默认时间 */
-  function gethour (info){
-    let hourList = [
-      moment( formatTime(info[0]),'HH:mm:ss'),
-      moment( formatTime(info[1]),'HH:mm:ss')
-    ];
-    return hourList;
-  }
   /* 修改菜名input */
   function changeInput (e){
     let name = e.target.value;
+
     if(inputValue !== name){
       setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,name:{ ...selectedList.name,[`${language}`]:name } });
     }
@@ -152,13 +135,9 @@ export default function ModalBox () {
     let endarr = timeString[1].split(':');
     let start = parseInt(startarr[0]) * 60 + parseInt(startarr[1]);
     let end = parseInt(endarr[0]) * 60 + parseInt(endarr[1]);
-    let cloneHours = _.cloneDeep(selectedList.hours[index]);
-    cloneHours.start = start;
-    cloneHours.end = end;
-    let newHour = _.cloneDeep(hour);
-    newHour[index] = cloneHours;
-    setHour(newHour);
-    setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,hours:newHour });
+    hour[index].start = start
+    hour[index].end = end;
+    setAfterUpdatedRestaurant({ ...afterUpdatedRestaurant,hours:hour });
   }
   /* 获取一段范围内的所有数值 */
   function range(start, end) {
@@ -173,13 +152,13 @@ export default function ModalBox () {
     let array = [ '星期一','星期二','星期三','星期四','星期五','星期六','星期天' ];
     return _.map(array, (item,index)=>{
       let hourInfo = selectedList.hours[index];
-      let result = hourInfo ? [ hourInfo.start,hourInfo.end ] : [ '00:00:00','00:00:00' ];
+      let result = hourInfo ? [ moment().startOf('day').add(hourInfo.start,'minutes'),moment().startOf('day').add(hourInfo.end,'minutes')] : [ '00:00:00','00:00:00' ];
       return (
         <div key={ selectedList._id + index }>
           <Button type="primary" disabled>
             {item}
           </Button>
-          <RangePicker disabledSeconds={()=> range(0, 60)} defaultValue={ gethour(result) } onChange={ (time,timeString)=>{changeHour(time,timeString,index);} } ></RangePicker>
+          <RangePicker disabledSeconds={()=> range(0, 60)} defaultValue={result} onChange={(time,timeString)=>{changeHour(time,timeString,index)}}></RangePicker>
         </div>
       );
     });
@@ -213,13 +192,13 @@ export default function ModalBox () {
                 noStyle
                 rules={ [ { required: true, message: 'Street is required' } ] }
               >
-                <Input style={{ width : '50%' }} placeholder="Input value" ref={ inputRef }  value={ inputRef }  onBlur={ (e)=>{changeInput(e);} }/>
+                <Input style={{ width : '50%' }} placeholder="Input value" ref={ inputRef }  value={ inputValue }  onBlur={ (e)=>{changeInput(e);} }/>
               </Form.Item>
             </Input.Group>
           </Form.Item>
           <Form.Item label="餐馆标签：">
             <Form.Item>
-              <Select style={{ width :'120px',margin :'0 10px 6px 0' }} defaultValue={ tags[0] } onChange={ (value)=>{changeTag(value);} }>
+              <Select style={{ width :'120px',margin :'0 10px 6px 0' }} defaultValue={ tags[0] } onChange={ (value)=>{addTag(value);} }>
                 {renderTagList()}
               </Select>
               {renderTags()}

@@ -19,12 +19,6 @@ function App () {
     <Router>
       <div>
         <Switch >
-          {/* <Route path='/admin' >
-            <Admin></Admin>
-          </Route>
-          <Route path='/'>
-            <Redirect to='/admin/restaurant'></Redirect>
-          </Route> */}
           {renderRouter()}
         </Switch>
       </div>
