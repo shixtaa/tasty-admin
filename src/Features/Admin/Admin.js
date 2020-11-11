@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 /* style */
 import logo from '../../Assets/logo.png';
 import './admin.scss';
@@ -10,13 +10,12 @@ import {
   LineChartOutlined
 } from '@ant-design/icons';
 /* router */
-import { BrowserRouter as Router,Switch,Route, Link ,useLocation,Redirect, useHistory } from 'react-router-dom';
+import { BrowserRouter as Router,Switch, Link ,useLocation, useHistory } from 'react-router-dom';
+
+import PrivateRoute from '../../Common/PrivateRoute'
 
 /* components */
-import Restaurant from './Components/Restaurant/Restaurant';
-import MyMenu from './Components/Menu/Menu';
 import Loading from '../../Components/Loading/Loading';
-import Order from './Components/Order/Order';
 
 /* utils */
 import {getStorage} from '../../Common/utils'
@@ -25,13 +24,16 @@ import {getStorage} from '../../Common/utils'
 import {removeUser} from '../Login/state/reducer'
 import { useDispatch } from 'react-redux';
 
-const { Header, Content, Footer, Sider } = Layout;
-export default function Admin () {
-  const [ collapsed,setCollapsed ] = useState(false);
-  const [ tab,setTab ] = useState('restaurant');
+import _ from 'lodash'
+import PropTypes from 'prop-types';
 
-  const user=getStorage('user')
+const { Header, Content, Footer, Sider } = Layout;
+export default function Admin ({routes}) {
+
   const location = useLocation();
+  const [ collapsed,setCollapsed ] = useState(false);
+  const [ tab,setTab ] = useState(location.pathname);
+  const user=getStorage('user')
   
   const dispatch=useDispatch()
   const history= useHistory()
@@ -47,25 +49,37 @@ export default function Admin () {
     dispatch(removeUser())
     history.push('/login')
   }
-  // console.log(location.pathname);
+
+/* 渲染admin下的子组件 */
+  function renderRouter (){
+    // console.log('routes',routes)
+    return _.map(routes,(item)=>{
+      return <PrivateRoute { ...item } path={`/admin${item.path}`} key={ Math.random() }></PrivateRoute>;
+    });
+  }
 /* eslint-disable */
 /* url改变，切换tab */
-  useEffect(()=>{
-    // console.log(arr)
-    // console.log('in')
-    // if(location.pathname.split('/').length===3){
-    //   setTab(location.pathname.split('/')[2])
+  // useEffect(()=>{
+    // if(location.pathname === '/admin/restaurant' || location.pathname === '/admin'||location.pathname === '/admin/order'&&user=='visitor'){
+    //   setTab('Restaurant');
+
+    // }else if(location.pathname === '/admin/menu'){
+    //   setTab('Menu');
+
+    // }else if(location.pathname === '/admin/order'){
+    //   setTab('Order');
     // }
-    if(location.pathname === '/admin/restaurant' || location.pathname === '/admin'||location.pathname === '/admin/order'&&user=='visitor'){
-      setTab('Restaurant');
+    // console.log(location.pathname)
+  // },[tab,location.pathname])
 
-    }else if(location.pathname === '/admin/menu'){
-      setTab('Menu');
-
-    }else if(location.pathname === '/admin/order'){
-      setTab('Order');
-    }
-  },[location.pathname])
+  function renderBreadcrumb(){
+    
+    return _.map(tab.split('/').slice(1),(item)=>{
+      return (
+        <Breadcrumb.Item key={Math.random()}>{item}</Breadcrumb.Item>
+      )
+    })
+  }
   return (
     <Router>
       <div>
@@ -74,19 +88,19 @@ export default function Admin () {
             <div className="logo">
               <img src={ logo } className='logo-img' alt='logo'></img>
             </div>
-            <Menu theme="dark" defaultSelectedKeys={ tab } mode="inline">
-              <Menu.Item key="restaurant"  icon={ <PieChartOutlined /> } onClick={ ()=>{changeTab('restaurant');} } >
+            <Menu theme="dark" defaultSelectedKeys={ tab} mode="inline">
+              <Menu.Item key="/admin/restaurant"  icon={ <PieChartOutlined /> } onClick={ ()=>{changeTab('/admin/restaurant');} } >
                 <Link to='/admin/restaurant'>
               餐馆
                 </Link>
               </Menu.Item>
-              <Menu.Item key="menu"  icon={ <DesktopOutlined /> } onClick={ ()=>{changeTab('menu');} } >
+              <Menu.Item key="/admin/menu"  icon={ <DesktopOutlined /> } onClick={ ()=>{changeTab('/admin/menu');} } >
                 <Link to='/admin/menu'>
               菜单
                 </Link>
               </Menu.Item>
               {user&&(user!=='visitor')?
-              <Menu.Item key="order"  icon={ <LineChartOutlined /> } onClick={ ()=>{changeTab('order');} } >
+              <Menu.Item key="/admin/order"  icon={ <LineChartOutlined /> } onClick={ ()=>{changeTab('/admin/order');} } >
                 <Link to='/admin/order'>
               订单
                 </Link>
@@ -101,12 +115,11 @@ export default function Admin () {
             <Header className="site-layout-background" style={{ padding : 0 }} />
             <Content style={{ margin : '0 16px' }}>
               <Breadcrumb style={{ margin : '16px 0' }}>
-                <Breadcrumb.Item>admin</Breadcrumb.Item>
-                <Breadcrumb.Item>{tab}</Breadcrumb.Item>
+                {renderBreadcrumb()}
               </Breadcrumb>
               <div className="site-layout-background" style={{ padding : 24, minHeight : 360 }}>
                 <Switch>
-                  <Route path='/admin/restaurant'>
+                  {/* <Route path='/admin/restaurant'>
                     <Restaurant></Restaurant>
                   </Route>
                   <Route path='/admin/menu'>
@@ -117,7 +130,8 @@ export default function Admin () {
                   </Route>
                   <Route path='/admin'>
                     <Redirect to='/admin/restaurant'></Redirect>
-                  </Route>
+                  </Route> */}
+                  {renderRouter()}
                 </Switch>
                 <Loading></Loading>
               </div>
@@ -128,4 +142,7 @@ export default function Admin () {
       </div>
     </Router>
   );
+}
+Admin.prototype={
+  routes:PropTypes.array
 }

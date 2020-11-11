@@ -19,7 +19,7 @@ export default function PrivateRoute ({ component: Component , ...rest }) {
     }
   }
 
-  if(rest.path === '/admin/order'){
+  if(rest.path === '/admin/order'&&user==='visitor'){
     console.log('in')
     history.push('/admin/restaurant')
   }
@@ -36,9 +36,10 @@ export default function PrivateRoute ({ component: Component , ...rest }) {
   return (
 
     <Route { ...rest } render={ ()=>{
+      // console.log(rest)
       return (
 
-        auth ? <Component/> : <Redirect to='/login'></Redirect>
+        auth ? <Component routes={rest.routes}/> : <Redirect to='/login'></Redirect>
       );
 
     } } ></Route>
@@ -47,6 +48,6 @@ export default function PrivateRoute ({ component: Component , ...rest }) {
 }
 
 PrivateRoute.propTypes = {
-  component: PropTypes.func
+  component: PropTypes.func,
 };
 
