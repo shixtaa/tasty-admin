@@ -15,7 +15,8 @@ import { getMenu ,getRestaurantName,clearData ,updateAvailable } from './state/r
 const { Option } = Select;
 
 /* utils */
-import {disable} from '../../Common/utils'
+// import {disable} from '../../Common/utils'
+import useDisable from '../../Hook/useDisable'
 
 export default function Menu () {
   const restNameList = useSelector(state=>state.menu.restaurantNames);
@@ -33,6 +34,9 @@ export default function Menu () {
   const[ searchInput,setsearchInput ] = useState('');
 
   const dispatch = useDispatch();
+
+  /* 权限 */
+  const isDisable=useDisable()
   const [ filterDropdownVisible,setFilterDropdownVisible ] = useState(false); // 筛选项下拉
   // const searchInput = useRef();
   /* table 数据 */
@@ -83,9 +87,7 @@ export default function Menu () {
       key: 'available',
       render:(text,record)=> {
         return (
-          // record.available ?
-          //   <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } defaultChecked/> :
-            <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } checked={ record.available } />
+            <Switch disabled={isDisable} onChange={ ()=>{changeAvailable(record);} } checked={ record.available } />
         );
       },
       width: '30%',

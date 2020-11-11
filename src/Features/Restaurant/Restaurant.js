@@ -16,7 +16,10 @@ import {useMount} from 'react-use'
 import ModalBox from './Component/ModalBox';
 
 /* utils */
-import {disable} from '../../Common/utils'
+// import {disable} from '../../Common/utils'
+
+/* 自定义hook */
+import useDisable from '../../Hook/useDisable'
 
 export default function Restaurant () {
   const [ dataSource,setDataSource ] = useState([]);
@@ -24,7 +27,7 @@ export default function Restaurant () {
   const list = useSelector(state=>state.restaurant.list);
 
   const dispatch = useDispatch();
-
+  const isDisable = useDisable()
   /* eslint-disable */
   useMount( async ()=>{
     await dispatch(getRest());
@@ -113,7 +116,7 @@ export default function Restaurant () {
       dataIndex: 'index',
       render:( text,record)=>{
         return (
-          <Button disabled={disable()}  type="primary" onClick={ ()=>{openModal(record.modalInfo);} } >
+          <Button disabled={isDisable}  type="primary" onClick={ ()=>{openModal(record.modalInfo);} } >
           操作
           </Button>
         );
@@ -124,7 +127,7 @@ export default function Restaurant () {
       key: 'closed',
       render:(text,record)=> {
         return (
-          <Switch disabled={disable()} onChange={ ()=>{onChange(record);} }  checked={ !_.isEmpty(record.closed) }/>
+          <Switch disabled={isDisable} onChange={ ()=>{onChange(record);} }  checked={ !_.isEmpty(record.closed) }/>
         );
       }
     },

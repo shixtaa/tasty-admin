@@ -79,15 +79,15 @@ export default function Admin ({routes}) {
               <img src={ logo } className='logo-img' alt='logo'></img>
             </div>
             {/* 左侧菜单栏 */}
-            <Menu theme="dark" defaultSelectedKeys={ _.last(location.pathname.split('/'))} mode="inline">
-              <Menu.Item key="restaurant"  icon={ <PieChartOutlined /> } onClick={()=>{history.push('/admin/restaurant')}} >
+            <Menu theme="dark" defaultSelectedKeys={ location.pathname} mode="inline">
+              <Menu.Item key="/admin/restaurant"  icon={ <PieChartOutlined /> } onClick={()=>{history.push('/admin/restaurant')}} >
                 餐馆
               </Menu.Item>
-              <Menu.Item key="menu"  icon={ <DesktopOutlined /> } onClick={()=>{history.push('/admin/menu')}} >
+              <Menu.Item key="/admin/menu"  icon={ <DesktopOutlined /> } onClick={()=>{history.push('/admin/menu')}} >
                 菜单
               </Menu.Item>
               {user&&(user!=='visitor')?
-              <Menu.Item key="order"  icon={ <LineChartOutlined /> } onClick={()=>{history.push('/admin/order')}} >
+              <Menu.Item key="/admin/order"  icon={ <LineChartOutlined /> } onClick={()=>{history.push('/admin/order')}} >
                 订单
               </Menu.Item>:null}
             </Menu>
