@@ -174,7 +174,7 @@ export default function Menu () {
       }
     };
     await dispatch(updateAvailable(data));
-    await dispatch(getMenu(selectedRest,pagination.page,pagination.pageSize,searchInput));
+    await dispatch(getMenu(selectedRest,/* pagination.page, */pagination.pageSize,searchInput));
   }
 
 
