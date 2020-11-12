@@ -1,9 +1,9 @@
 import request from '../Common/request';
 import { host } from '../Common/config';
 
-export async function menu (id,page,limit,keyword){
+export async function menu (data){
   let result = await request({
-    'url':`${host}/food?restaurantId=${id}&page=${page}&limit=${limit}&keyword=${keyword}`,
+    'url':`${host}/food?restaurantId=${data.id}&page=${data.page}&limit=${data.limit}&keyword=${data.keyword}`,
     'method':'get'
   });
   return result;

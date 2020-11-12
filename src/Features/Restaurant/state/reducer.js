@@ -26,14 +26,14 @@ export const { setZh ,setEn } = languageSlice.actions;
 
 export const updateRest = (value) => async ( dispatch)=> {
   try {
-    await dispatch(showLoading());
+    dispatch(showLoading());
     let result = await updateRestaurant(value);
     return result;
   } catch (error) {
     message.error(error.message);
   }finally{
-    await dispatch(getRest());
-    await dispatch(hideLoading());
+    dispatch(getRest());
+    dispatch(hideLoading());
   }
 };
 

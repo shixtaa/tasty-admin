@@ -29,9 +29,9 @@ export default function Restaurant () {
   const dispatch = useDispatch();
   const isDisable = useDisable()
   /* eslint-disable */
-  useMount( async ()=>{
-    await dispatch(getRest());
-    await dispatch(getTags());
+  useMount(  ()=>{
+    dispatch(getRest());
+    dispatch(getTags());
   },[]);
 
   useEffect(()=>{
@@ -57,7 +57,7 @@ export default function Restaurant () {
   }
 
   /* 人为关闭 */
-  async function onChange (value){
+  function onChange (value){
     let close = {};
     if(value.closed == (null || undefined)){
       close.closed = true;
@@ -69,7 +69,7 @@ export default function Restaurant () {
       data:{
         ..._.omit({ closed:close },'_id')
       } };
-    await dispatch(updateRest(data));
+    dispatch(updateRest(data));
   }
 
   /* 打开modal */
@@ -116,7 +116,7 @@ export default function Restaurant () {
       dataIndex: 'index',
       render:( text,record)=>{
         return (
-          <Button disabled={isDisable}  type="primary" onClick={ ()=>{openModal(record.modalInfo);} } >
+          <Button disabled={isDisable}  type="primary" onClick={ ()=>{openModal(_.cloneDeep(record.modalInfo));} } >
           操作
           </Button>
         );
@@ -134,7 +134,7 @@ export default function Restaurant () {
   ];
   return (
     <div>
-      <Table dataSource={ dataSource } columns={ columns } />
+      <Table dataSource={ dataSource } columns={ columns }  />
       <ModalBox ></ModalBox>
 
     </div>

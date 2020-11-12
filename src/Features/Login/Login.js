@@ -26,20 +26,14 @@ export default function Login() {
   const history=useHistory()
 
 const dispatch=useDispatch()
-  // const onFinish = values => {
-  //   console.log('Success:', values);
-  // };
 
-  // const onFinishFailed = errorInfo => {
-  //   console.log('Failed:', errorInfo);
-  // };
-
-  async function loginClick(){
+async  function loginClick(){
     let data={
       username:username,
       password:password
     }
     let result=await dispatch(postLogin(data))
+    console.log(result)
     if(result){
       setStorage('user',result.role)
       history.push('/admin/restaurant')
@@ -50,8 +44,6 @@ const dispatch=useDispatch()
       {...layout}
       name="basic"
       initialValues={{ remember: true }}
-      // onFinish={onFinish}
-      // onFinishFailed={onFinishFailed}
       style={{margin:'300px auto',width:'500px',}}
     >
       <Form.Item
@@ -76,5 +68,5 @@ const dispatch=useDispatch()
         </Button>
       </Form.Item>
     </Form>
-      );
+    );
 }

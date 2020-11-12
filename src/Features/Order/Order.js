@@ -244,7 +244,7 @@ async function changeData(date, dateString){
   let end= moment(date[1]._d).utc().toISOString();
   let array=formatTime(start,end)
   setAllDate(array)
-  await dispatch(getOrder(start,end))
+  dispatch(getOrder(start,end))
 }
 /* 把选择的日期范围 全部罗列出来 */
 function formatTime (start,end){

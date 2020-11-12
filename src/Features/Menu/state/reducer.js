@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { showLoading,hideLoading } from '../../../Redux/Reducer/loading';
 import { message } from 'antd';
+import _ from 'lodash';
+
+/* request */
 import { menu ,available } from '../../../Request/menu';
 import { restaurant } from '../../../Request/restaurant';
-import _ from 'lodash';
 
 export const meunSlice = createSlice({
   name: 'counter',
@@ -34,41 +36,42 @@ export const { loadRestaurantName ,loadFoods,setCount ,clearData } = meunSlice.a
 
 export const getRestaurantName = () => async ( dispatch)=> {
   try {
-    await dispatch(showLoading());
+    dispatch(showLoading());
     let result = await restaurant();
     let nameList = _.map(result.list,(item)=>{
       return { id:item._id,name:item.name['zh-CN'] };
     });
-    await dispatch(loadRestaurantName(nameList));
+    dispatch(loadRestaurantName(nameList));
   } catch (error) {
     message.error(error.message);
   }finally{
-    await dispatch(hideLoading());
+    dispatch(hideLoading());
   }
 };
 
-export const getMenu = (id,page,limit,keyword) => async ( dispatch)=> {
+export const getMenu = (data) => async ( dispatch)=> {
   try {
-    await dispatch(showLoading());
-    let result = await menu(id,page,limit,keyword);
-    await dispatch(loadFoods(result.list));
-    await dispatch(setCount(result.count));
+    dispatch(showLoading());
+    let result = await menu(data);
+    dispatch(loadFoods(result.list));
+    dispatch(setCount(result.count));
   } catch (error) {
     message.error(error.message);
   }finally{
-    await dispatch(hideLoading());
+    dispatch(hideLoading());
   }
 };
 
-export const updateAvailable = (data) => async ( dispatch)=> {
+export const updateAvailable = (data,params) => async ( dispatch)=> {
   try {
-    await dispatch(showLoading());
+    dispatch(showLoading());
     let result = await available(data);
     return result;
   } catch (error) {
     message.error(error.message);
   }finally{
-    await dispatch(hideLoading());
+    dispatch(getMenu(params))
+    dispatch(hideLoading());
   }
 };
 

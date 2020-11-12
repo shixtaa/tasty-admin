@@ -71,7 +71,6 @@ export default function Admin ({routes}) {
   
   
   return (
-    // <Router>
       <div>
         <Layout style={{ minHeight : '100vh' }} >
           <Sider collapsible collapsed={ collapsed } onCollapse={ onCollapse } >
@@ -117,7 +116,6 @@ export default function Admin ({routes}) {
           </Layout>
         </Layout>
       </div>
-    // </Router>
   );
 }
 Admin.prototype={

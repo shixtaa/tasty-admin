@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { showLoading,hideLoading } from '../../../Redux/Reducer/loading';
+/* request */
 import {login } from '../../../Request/login'
-// import {setStorage} from '../../../Common/utils'
 
 export const loginSlice = createSlice({
   name: 'order',
@@ -22,7 +22,7 @@ export const loginSlice = createSlice({
 
 export const { saveUser,removeUser } = loginSlice.actions;
 
-export const postLogin = (data) =>async(dispatch )=> {
+export const postLogin = (data) => async(dispatch )=> {
   try {
     dispatch(showLoading());
     let result=await login(data)

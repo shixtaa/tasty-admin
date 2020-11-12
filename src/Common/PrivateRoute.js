@@ -7,7 +7,7 @@ import { getStorage } from './utils';
 export default function PrivateRoute ({ component: Component , ...rest }) {
   // const user=useSelector(state=>state.login.user)
   const history=useHistory()
-  let auth = true;
+  let auth = false;
   let user = getStorage('user');
   
   /* 当path为/时，已登录进admin，未登录进login */
@@ -23,13 +23,19 @@ export default function PrivateRoute ({ component: Component , ...rest }) {
     history.push('/admin/restaurant')
   }
 
-  // /** 如果未登录 不可以进入除login以外页面 */
+  /** 如果未登录 不可以进入除login以外页面 */
   if(!user){
     if(rest.path !== '/login'){
       auth = false;
+    }else{
+      auth=true
     }
   }else{
+    if(rest.path === '/login'){
+      history.push('/admin/restaurant')
+    }
     auth = true;
+
   }
 
   return (

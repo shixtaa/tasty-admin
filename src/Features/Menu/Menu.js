@@ -102,21 +102,23 @@ export default function Menu () {
 
   useEffect(()=>{
 
-    console.log('useEffect1');
     renderData();
     setPagination({ ...pagination,total:count ,current:1,page:1 });
   },[ selectedRest,count ]);
 
   useEffect(()=>{
-    console.log('useEffect2',pagination);
     renderData();
-
-    // setPagination({ ...pagination,total:count ,current:pagination.page,page:pagination.pageSize });
   },[ foodList,pagination.page,pagination.pageSize ]);
 
   /* 搜索菜名 */
-  async function handleSearch () {
-    await dispatch(getMenu(selectedRest,1,pagination.pageSize,searchInput));
+  function handleSearch () {
+    let data={
+      id:selectedRest,
+      page:1,
+      limit:pagination.pageSize,
+      keyword:searchInput
+    }
+    dispatch(getMenu(data));
     setFilterDropdownVisible(false);
   }
 
@@ -124,22 +126,26 @@ export default function Menu () {
   function renderNameOptions (){
     return _.map(restNameList,(item)=>{
       return (
-        <Option value={ JSON.stringify(item) } key={ item.id }>{item.name}</Option>
+        <Option value={ item.id } key={ item.id }>{item.name}</Option>
       );
     });
   }
   /* 选定餐馆 */
-  async function onChange (value) {
+  function onChange (value) {
     /* 清空菜名搜索框 */
     setsearchInput('');
-    let info = JSON.parse(value);
-    await dispatch(getMenu(info.id,1,pagination.pageSize,''));
-    // setPagination({ ...pagination,current:1, page:1,total:count });
-    setselectedRest(info.id);
+    let data={
+      id:value,
+      page:1,
+      limit:pagination.pageSize,
+      keyword:''
+    }
+    dispatch(getMenu(data));
+    setselectedRest(value);
   }
 
   /* 切换页面 */
-  async function changePage (value){
+  function changePage (value){
     console.log('page',value);
     setPagination({
       ...pagination,
@@ -147,7 +153,13 @@ export default function Menu () {
       page: value.current,
       pageSize: value.pageSize
     });
-    await dispatch(getMenu(selectedRest,value.current,value.pageSize,searchInput));
+    let data={
+      id:selectedRest,
+      page:value.current,
+      limit:value.pageSize,
+      keyword:searchInput
+    }
+    dispatch(getMenu(data));
   }
 
   /* 渲染表格数据 */
@@ -161,20 +173,23 @@ export default function Menu () {
         available:item.available
       });
     });
-
-    console.log('length ==>',data.length);
     setData(data);
   }
   /* 修改available状态 */
-  async function changeAvailable (record){
+  function changeAvailable (record){
     let data = {
       id: record.key,
       data:{
         ..._.omit({ available:!record.available },'_id')
       }
     };
-    await dispatch(updateAvailable(data));
-    await dispatch(getMenu(selectedRest,pagination.page,pagination.pageSize,searchInput));
+    let params={
+      id:selectedRest,
+      page:pagination.page,
+      limit:pagination.pageSize,
+      keyword:searchInput
+    }
+    dispatch(updateAvailable(data,params));
   }
 
 

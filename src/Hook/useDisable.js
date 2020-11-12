@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react'
 import {getStorage} from '../Common/utils'
-// import { useState } from 'react'
 
 export default function useDisable(){
-  let user=getStorage('user')
-  // const [isDisable]=useState(user!=='admin')
-  let isDisable=user!=='admin'
+  const user =getStorage('user')
+  const [isDisable,setIsDisable]=useState(user!=='admin')
+  useEffect(()=>{
+    setIsDisable(user!=='admin')
+  },[user])
   return isDisable
 }
