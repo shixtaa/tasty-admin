@@ -10,7 +10,7 @@ import {
   LineChartOutlined
 } from '@ant-design/icons';
 /* router */
-import { BrowserRouter as Router,Switch, Link ,useLocation, useHistory } from 'react-router-dom';
+import { /* BrowserRouter as Router ,*/Switch ,useLocation/* ,Link */, useHistory } from 'react-router-dom';
 
 import PrivateRoute from '../../Common/PrivateRoute'
 
@@ -30,108 +30,85 @@ import PropTypes from 'prop-types';
 const { Header, Content, Footer, Sider } = Layout;
 export default function Admin ({routes}) {
 
-  const location = useLocation();
+  let location = useLocation();
   const [ collapsed,setCollapsed ] = useState(false);
-  const [ tab,setTab ] = useState(location.pathname);
   const user=getStorage('user')
   
   const dispatch=useDispatch()
   const history= useHistory()
 
+  /* eslint-disable */
+
   function onCollapse (){
     setCollapsed(!collapsed );
   }
-  function changeTab (tabName){
-    setTab(tabName);
-  }
-
+/* 登出 */
   function logout(){
     dispatch(removeUser())
     history.push('/login')
   }
 
 /* 渲染admin下的子组件 */
-  function renderRouter (){
-    // console.log('routes',routes)
+  function renderSubRoutes (){
     return _.map(routes,(item)=>{
-      return <PrivateRoute { ...item } path={`/admin${item.path}`} key={ Math.random() }></PrivateRoute>;
+      return <PrivateRoute { ...item } path={item.path} key={Math.random()} ></PrivateRoute>;
     });
   }
-/* eslint-disable */
-/* url改变，切换tab */
-  // useEffect(()=>{
-    // if(location.pathname === '/admin/restaurant' || location.pathname === '/admin'||location.pathname === '/admin/order'&&user=='visitor'){
-    //   setTab('Restaurant');
-
-    // }else if(location.pathname === '/admin/menu'){
-    //   setTab('Menu');
-
-    // }else if(location.pathname === '/admin/order'){
-    //   setTab('Order');
-    // }
-    // console.log(location.pathname)
-  // },[tab,location.pathname])
 
   function renderBreadcrumb(){
-    
-    return _.map(tab.split('/').slice(1),(item)=>{
-      return (
-        <Breadcrumb.Item key={Math.random()}>{item}</Breadcrumb.Item>
-      )
+
+    return _.map(location.pathname.split('/'),(item)=>{
+      if(!item){
+        return null
+      }else{
+        return (
+          <Breadcrumb.Item key={Math.random()}>{item}</Breadcrumb.Item>
+        )
+      }
     })
   }
+  
+  
+  
   return (
-    <Router>
+    // <Router>
       <div>
         <Layout style={{ minHeight : '100vh' }} >
           <Sider collapsible collapsed={ collapsed } onCollapse={ onCollapse } >
             <div className="logo">
               <img src={ logo } className='logo-img' alt='logo'></img>
             </div>
-            <Menu theme="dark" defaultSelectedKeys={ tab} mode="inline">
-              <Menu.Item key="/admin/restaurant"  icon={ <PieChartOutlined /> } onClick={ ()=>{changeTab('/admin/restaurant');} } >
-                <Link to='/admin/restaurant'>
-              餐馆
-                </Link>
+            {/* 左侧菜单栏 */}
+            <Menu theme="dark" defaultSelectedKeys={ location.pathname} mode="inline">
+              <Menu.Item key="/admin/restaurant"  icon={ <PieChartOutlined /> } onClick={()=>{history.push('/admin/restaurant')}} >
+                餐馆
               </Menu.Item>
-              <Menu.Item key="/admin/menu"  icon={ <DesktopOutlined /> } onClick={ ()=>{changeTab('/admin/menu');} } >
-                <Link to='/admin/menu'>
-              菜单
-                </Link>
+              <Menu.Item key="/admin/menu"  icon={ <DesktopOutlined /> } onClick={()=>{history.push('/admin/menu')}} >
+                菜单
               </Menu.Item>
               {user&&(user!=='visitor')?
-              <Menu.Item key="/admin/order"  icon={ <LineChartOutlined /> } onClick={ ()=>{changeTab('/admin/order');} } >
-                <Link to='/admin/order'>
-              订单
-                </Link>
+              <Menu.Item key="/admin/order"  icon={ <LineChartOutlined /> } onClick={()=>{history.push('/admin/order')}} >
+                订单
               </Menu.Item>:null}
             </Menu>
+            {/* 登出 */}
             <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
 
               <Button type="primary" onClick={logout} style={{position:'fixed',bottom:'100px',}}>登出</Button>
             </div>
           </Sider>
+          {/* 右侧主体 */}
           <Layout className="site-layout">
             <Header className="site-layout-background" style={{ padding : 0 }} />
             <Content style={{ margin : '0 16px' }}>
+              {/* 面包屑 */}
               <Breadcrumb style={{ margin : '16px 0' }}>
                 {renderBreadcrumb()}
               </Breadcrumb>
+              {/* 嵌套路由 */}
               <div className="site-layout-background" style={{ padding : 24, minHeight : 360 }}>
                 <Switch>
-                  {/* <Route path='/admin/restaurant'>
-                    <Restaurant></Restaurant>
-                  </Route>
-                  <Route path='/admin/menu'>
-                    <MyMenu></MyMenu>
-                  </Route>
-                  <Route path='/admin/order'>
-                    <Order></Order>
-                  </Route>
-                  <Route path='/admin'>
-                    <Redirect to='/admin/restaurant'></Redirect>
-                  </Route> */}
-                  {renderRouter()}
+                  {renderSubRoutes()}
                 </Switch>
                 <Loading></Loading>
               </div>
@@ -140,7 +117,7 @@ export default function Admin ({routes}) {
           </Layout>
         </Layout>
       </div>
-    </Router>
+    // </Router>
   );
 }
 Admin.prototype={

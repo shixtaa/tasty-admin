@@ -14,8 +14,8 @@ import pinyinMatch from 'pinyin-match';
 import { getMenu ,getRestaurantName,clearData ,updateAvailable } from './state/reducer';
 const { Option } = Select;
 
-/* utils */
-import {disable} from '../../Common/utils'
+/* 自定义hook */
+import useDisable from '../../Hook/useDisable'
 
 export default function Menu () {
   const restNameList = useSelector(state=>state.menu.restaurantNames);
@@ -33,8 +33,10 @@ export default function Menu () {
   const[ searchInput,setsearchInput ] = useState('');
 
   const dispatch = useDispatch();
+
+  /* 权限 */
+  const isDisable=useDisable()
   const [ filterDropdownVisible,setFilterDropdownVisible ] = useState(false); // 筛选项下拉
-  // const searchInput = useRef();
   /* table 数据 */
   const columns = [
     {
@@ -83,9 +85,7 @@ export default function Menu () {
       key: 'available',
       render:(text,record)=> {
         return (
-          record.available ?
-            <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } defaultChecked/> :
-            <Switch disabled={disable()} onChange={ ()=>{changeAvailable(record);} } checked={ record.available } />
+            <Switch disabled={isDisable} onChange={ ()=>{changeAvailable(record);} } checked={ record.available } />
         );
       },
       width: '30%',
@@ -93,25 +93,34 @@ export default function Menu () {
   ];
   /* 渲染餐馆名称 */
   useEffect( ()=>{;
-    dispatch(clearData());
     dispatch(getRestaurantName());
-  },[dispatch]);
+    return ()=>{
+      dispatch(clearData());
+    }
+  },[]);
+  
 
   useEffect(()=>{
-    setPagination({ ...pagination,total:count ,current:1,page:1 });
+
+    console.log('useEffect1');
     renderData();
+    setPagination({ ...pagination,total:count ,current:1,page:1 });
   },[ selectedRest,count ]);
 
   useEffect(()=>{
+    console.log('useEffect2',pagination);
     renderData();
-  },[ pagination.page,pagination.pageSize ]);
+
+    // setPagination({ ...pagination,total:count ,current:pagination.page,page:pagination.pageSize });
+  },[ foodList,pagination.page,pagination.pageSize ]);
+
   /* 搜索菜名 */
   async function handleSearch () {
     await dispatch(getMenu(selectedRest,1,pagination.pageSize,searchInput));
     setFilterDropdownVisible(false);
   }
 
-  /* 渲染餐馆名字 */
+  /* 渲染餐馆名字option */
   function renderNameOptions (){
     return _.map(restNameList,(item)=>{
       return (
@@ -121,30 +130,30 @@ export default function Menu () {
   }
   /* 选定餐馆 */
   async function onChange (value) {
+    /* 清空菜名搜索框 */
     setsearchInput('');
     let info = JSON.parse(value);
     await dispatch(getMenu(info.id,1,pagination.pageSize,''));
-    setPagination({ ...pagination,current:1, page:1,total:count });
+    // setPagination({ ...pagination,current:1, page:1,total:count });
     setselectedRest(info.id);
   }
 
   /* 切换页面 */
   async function changePage (value){
     console.log('page',value);
-    await dispatch(getMenu(selectedRest,value.current,value.pageSize,searchInput));
     setPagination({
       ...pagination,
       current:value.current,
       page: value.current,
       pageSize: value.pageSize
     });
-    renderData();
+    await dispatch(getMenu(selectedRest,value.current,value.pageSize,searchInput));
   }
 
   /* 渲染表格数据 */
   function renderData (){
     let data = [];
-    _.map(foodList,(item)=>{
+    _.forEach(foodList,(item)=>{
       data.push({
         key:item._id,
         name:item.name['zh-CN'],
@@ -152,11 +161,12 @@ export default function Menu () {
         available:item.available
       });
     });
+
+    console.log('length ==>',data.length);
     setData(data);
   }
   /* 修改available状态 */
   async function changeAvailable (record){
-    console.log(record);
     let data = {
       id: record.key,
       data:{
@@ -164,9 +174,9 @@ export default function Menu () {
       }
     };
     await dispatch(updateAvailable(data));
-    renderData();
+    await dispatch(getMenu(selectedRest,pagination.page,pagination.pageSize,searchInput));
   }
- 
+
 
   return (
     <div>
@@ -176,7 +186,6 @@ export default function Menu () {
         placeholder="Select a restaurant"
         optionFilterProp="children"
         onChange={ onChange }
-
         filterOption={ (input, option) =>{
           if(option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0){
             return true;
@@ -184,8 +193,7 @@ export default function Menu () {
           else if(pinyinMatch.match(option.children,input )){
             return true;
           }
-        }
-        }
+        }}
       >
         {renderNameOptions()}
       </Select>

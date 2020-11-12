@@ -10,41 +10,35 @@ import { updateRest } from './state/reducer';
 import _ from 'lodash';
 import {  useDispatch ,useSelector } from 'react-redux';
 
+import {useMount} from 'react-use'
+
 /* components */
 import ModalBox from './Component/ModalBox';
 
 /* utils */
-import {disable} from '../../Common/utils'
+// import {disable} from '../../Common/utils'
+
+/* 自定义hook */
+import useDisable from '../../Hook/useDisable'
 
 export default function Restaurant () {
   const [ dataSource,setDataSource ] = useState([]);
-
-  /* 点击操作之后赋给modal的信息 */
-  const [ perItem,setPerItem ] = useState({});
   /* state中存储的餐馆列表 */
   const list = useSelector(state=>state.restaurant.list);
-  const language = useSelector(state=>state.language.lang);
 
   const dispatch = useDispatch();
-
-  const isShow = useSelector(state=>state.restaurant.isShow);
-
+  const isDisable = useDisable()
   /* eslint-disable */
-  useEffect( async ()=>{
+  useMount( async ()=>{
     await dispatch(getRest());
-    renderList();
-    dispatch(getTags());
-  },[ list.length ]);
-
-  // useEffect(  ()=>{
-  //   renderList();
-  // },[ list ]);
+    await dispatch(getTags());
+  },[]);
 
   useEffect(()=>{
-    if(perItem.name){
-      setPerItem({ ...perItem,newName:perItem.name[`${language}`] });
+    if( list.length >0){
+      renderList();
     }
-  },[ language ]);
+  },[ list ]);
 
   /* 渲染restarant列表 */
   function renderList (){
@@ -122,7 +116,7 @@ export default function Restaurant () {
       dataIndex: 'index',
       render:( text,record)=>{
         return (
-          <Button disabled={disable()}  type="primary" onClick={ ()=>{openModal(record.modalInfo);} } >
+          <Button disabled={isDisable}  type="primary" onClick={ ()=>{openModal(record.modalInfo);} } >
           操作
           </Button>
         );
@@ -133,9 +127,7 @@ export default function Restaurant () {
       key: 'closed',
       render:(text,record)=> {
         return (
-          record.closed !== (null || undefined) ?
-            <Switch disabled={disable()} onChange={ ()=>{onChange(record);} } defaultChecked /> :
-            <Switch disabled={disable()} onChange={ ()=>{onChange(record);} }  checked={ !_.isEmpty(record.closed) }/>
+          <Switch disabled={isDisable} onChange={ ()=>{onChange(record);} }  checked={ !_.isEmpty(record.closed) }/>
         );
       }
     },
@@ -143,7 +135,8 @@ export default function Restaurant () {
   return (
     <div>
       <Table dataSource={ dataSource } columns={ columns } />
-      {isShow ? <ModalBox ></ModalBox> : null}
+      <ModalBox ></ModalBox>
+
     </div>
   );
 }
