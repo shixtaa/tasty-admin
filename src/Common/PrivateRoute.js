@@ -20,7 +20,6 @@ export default function PrivateRoute ({ component: Component , ...rest }) {
   }
 
   if(rest.path === '/admin/order'&&user==='visitor'){
-    console.log('in')
     history.push('/admin/restaurant')
   }
 

@@ -31,7 +31,7 @@ export default function Restaurant () {
   /* eslint-disable */
   useMount( async ()=>{
     await dispatch(getRest());
-    dispatch(getTags());
+    await dispatch(getTags());
   },[]);
 
   useEffect(()=>{

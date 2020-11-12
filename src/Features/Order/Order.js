@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 /* style */
 import './order.scss'
-/* antd */
-import { DatePicker, Space } from 'antd';
-import { useSelector } from 'react-redux';
 
+/* moment */
 import moment from 'moment'
 /* lodash */
 import _ from 'lodash'
 /* echarts */
+
  // 引入 ECharts 主模块
 import echarts from 'echarts/lib/echarts';
 // 引入环形图
@@ -18,47 +17,33 @@ import 'echarts/lib/chart/line';
 // 引入提示框和标题组件
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
-// import 'echarts/lib/component/visualMap';
 
 /* actions */
-import {getOrder,clearOrder} from './state/reducer'
+import {getOrder/* ,clearOrder */} from './state/reducer'
 import { useDispatch } from 'react-redux';
 
-/* utils */
-import {getStorage} from '../../Common/utils'
-import { useHistory } from 'react-router-dom';
-
+/* antd */
+import { DatePicker, Space } from 'antd';
+import { useSelector } from 'react-redux';
 const { RangePicker } = DatePicker;
+
 export default function Order () {
   const orderList=useSelector(state=>state.order.list)
+
   const dispatch=useDispatch()
-  const history=useHistory()
+
   const quantityRef=useRef()
   const peopleRef =useRef()
-  // const quantityLineRef=useRef()
-  // const quantityPieRef=useRef()
+
   const [allDate,setAllDate]=useState([])
 
   /* eslint-disable */
   useEffect(()=>{
-    let user=getStorage('user')
-    if(user&&user==='visitor'){
-      history.replace('/admin/restaurant')
-    }
-    dispatch(clearOrder())
-    // quantityLine()
-    // quantityPie()
-    renderQuantity()
-    renderPeople()
-  },[])
-  useEffect(()=>{
     if(orderList.length>0){
-      // quantityLine()
-      // quantityPie()
       renderQuantity()
       renderPeople()
     }
-  },[orderList.length])
+  },[orderList])
 
 /* 去重，计算数量 */
 function handleData(array,params){
@@ -166,7 +151,6 @@ function quantityData(){
 function renderQuantity(){
   let data=quantityData()
   
-  
   echarts.init(quantityRef.current).setOption({
     title: {
       text: '订单量',
@@ -181,7 +165,6 @@ function renderQuantity(){
     },
     xAxis: {
       type: 'category',
-      // data: _.map(data,(item)=>{return item.name})
       data: _.map(data,(item)=>{return item.name})
       
     },
@@ -283,7 +266,7 @@ function formatTime (start,end){
   return (
     <div>
       <Space direction="vertical" size={ 20 }>
-        <RangePicker style={{ width :'800px' }} onChange={changeData} /* disabled={disable()} */ />
+        <RangePicker style={{ width :'800px' }} onChange={changeData} />
       </Space>
       <div className='main'>
         <div className='order-quantity' ref={quantityRef}>

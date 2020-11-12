@@ -26,7 +26,6 @@ export const postLogin = (data) =>async(dispatch )=> {
   try {
     dispatch(showLoading());
     let result=await login(data)
-    console.log(result)
     dispatch(saveUser(result))
     return result;
   } catch (error) {
