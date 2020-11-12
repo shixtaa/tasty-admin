@@ -1,4 +1,4 @@
-import React, {  useEffect,useState } from 'react';
+import React from 'react';
 /* antd */
 import { Table,Tag,Switch, Button } from 'antd';
 
@@ -15,14 +15,10 @@ import {useMount} from 'react-use'
 /* components */
 import ModalBox from './Component/ModalBox';
 
-/* utils */
-// import {disable} from '../../Common/utils'
-
 /* 自定义hook */
 import useDisable from '../../Hook/useDisable'
 
 export default function Restaurant () {
-  const [ dataSource,setDataSource ] = useState([]);
   /* state中存储的餐馆列表 */
   const list = useSelector(state=>state.restaurant.list);
 
@@ -34,27 +30,22 @@ export default function Restaurant () {
     dispatch(getTags());
   },[]);
 
-  useEffect(()=>{
-    if( list.length >0){
-      renderList();
-    }
-  },[ list ]);
 
   /* 渲染restarant列表 */
-  function renderList (){
-    let array = [];
-    _.map(list,(item)=>{
-      array.push({
-        name:item.name['zh-CN'],
-        address:item.address.formatted,
-        tags:item.tags,
-        key:item._id,
-        modalInfo:item,
-        closed:item.closed
-      });
-    });
-    setDataSource(array);
-  }
+  // function renderList (){
+  //   let array = [];
+  //   _.map(list,(item)=>{
+  //     array.push({
+  //       name:item.name['zh-CN'],
+  //       address:item.address.formatted,
+  //       tags:item.tags,
+  //       key:item._id,
+  //       modalInfo:item,
+  //       closed:item.closed
+  //     });
+  //   });
+  //   setDataSource(array);
+  // }
 
   /* 人为关闭 */
   function onChange (value){
@@ -83,12 +74,14 @@ export default function Restaurant () {
     {
       title: '餐馆',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      render:(text)=>text['zh-CN']
     },
     {
       title: '地址',
       dataIndex: 'address',
       key: 'address',
+      render:(text)=>text.formatted
     },
     {
       title: '标签',
@@ -116,7 +109,7 @@ export default function Restaurant () {
       dataIndex: 'index',
       render:( text,record)=>{
         return (
-          <Button disabled={isDisable}  type="primary" onClick={ ()=>{openModal(_.cloneDeep(record.modalInfo));} } >
+          <Button disabled={isDisable}  type="primary" onClick={ ()=>{openModal(_.cloneDeep(record));} } >
           操作
           </Button>
         );
@@ -134,7 +127,7 @@ export default function Restaurant () {
   ];
   return (
     <div>
-      <Table dataSource={ dataSource } columns={ columns }  />
+      <Table dataSource={ list } columns={ columns }  rowKey={(record)=>{record._id}}/>
       <ModalBox ></ModalBox>
 
     </div>
